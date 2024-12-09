@@ -18,6 +18,12 @@ void unset_var(char* variable, var table[]);
 
 //--------------------------------------------------------
 
+void pipe_function(char* args[]);               // |
 
+void run_on_file_content(char* args[]);         // <
+
+void redirect_output_to_file(char* args[]);     // >
+
+void run_in_background(char* args[]);           // &
 
 #endif

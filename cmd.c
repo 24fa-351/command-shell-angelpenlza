@@ -1,6 +1,11 @@
 //  File Name:      cmd.c
 //  Author:         Angel Penaloza
 //  Description:    Command Shell
+//  Known Flaws:     -  (xsh) can only output one set variable at a time,
+//                      function stops after one variable is found
+//                   -  missing 3 pipe functions
+//                   -  the pipe function implemented works, 
+//                      but breaks out of the loop
 //------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,8 +31,10 @@ void help() {
 char* getDirectory(char* curdir) {
     char CWD[MAX_CHAR_LIMIT] = { 0 };
     getcwd(CWD, sizeof(CWD));
-    char* directory = strstr(CWD, "penlza");
-    if(directory != NULL && strcmp(directory, "penlza") != 0) {
+    char* directory = strrchr(CWD, '/');
+    if( directory != NULL 
+        && strcmp(directory, "/command-shell-angelpenlza") != 0
+        && strstr(CWD, "/command-shell-angelpenlza") != NULL) {
         directory = strrchr(directory, '/') + 1;
         strcat(directory, " >> ");
         return directory;
@@ -43,13 +50,23 @@ int searchForVar(char* args[]) {
     } return -1;
 }
 
+int searchForOp(char* op, char* args[]) {
+    int index = 0;
+    while(args[index] != NULL) {
+        if(strcmp(op, args[index]) == 0)
+            return index;
+        index++;
+    } return -1;
+}
+
 int main() {
     var table[MAX_ARG_LIMIT];
     init_table(table, MAX_ARG_LIMIT);
     char user_input[MAX_CHAR_LIMIT];
     char curdir[MAX_CHAR_LIMIT] = "\0";
     char* token;
-    int index = 0;  
+    int index = 0; 
+    int op_index; 
     int status; 
     pid_t pid; 
 
@@ -82,7 +99,7 @@ int main() {
                 chdir(args[1]);
                 strcpy(curdir, getDirectory(curdir));
                 if(strcmp(curdir, "") == 0)
-                    chdir("command-shell");
+                    chdir("command-shell-angelpenlza");
             } continue;
         } 
         
@@ -108,6 +125,38 @@ int main() {
             char temp[MAX_CHAR_LIMIT];
             strcpy(temp, args[vari] + 1);
             strcpy(args[vari], table[hash(temp)].value);
+        }
+
+        if((op_index = searchForOp("|", args)) >= 0) {
+            if(args[op_index + 1] == NULL || op_index == 0) 
+                printf("invalid operator placement\n");
+            else 
+                pipe_function(args);
+            continue;
+        }
+
+        if((op_index = searchForOp("<", args)) >=0) {
+            if(args[op_index + 1] == NULL || op_index == 0) 
+                printf("invalid operator placement\n");
+            else
+                //run_on_file_content(args);
+            continue;
+        }
+
+        if((op_index = searchForOp(">", args)) >= 0) {
+            if(args[op_index + 1] == NULL || op_index == 0) 
+                printf("invalid operator placement\n");
+            else
+                redirect_output_to_file(args);
+            continue;
+        }
+
+        if((op_index = searchForOp("&", args) >= 0)) {
+            if(op_index == 0 || args[op_index + 1] != NULL)
+                printf("invalid operator placement\n");
+            else 
+                //run_in_background(args);
+            continue;
         }
 
         pid = fork();

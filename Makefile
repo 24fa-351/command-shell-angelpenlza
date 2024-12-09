@@ -1,7 +1,7 @@
 all: compile run clean
 
-compile: cmd.c hashtable.c
-	gcc cmd.c hashtable.c -o cmd
+compile: cmd.c hashtable.c pipes.c
+	gcc cmd.c hashtable.c pipes.c -o cmd
 
 run: 
 	./cmd 

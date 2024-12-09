@@ -1,0 +1,9 @@
+student A   5.9
+student A   5.9
+student F   5.2
+student F   5.2
+student G   3.1
+student M   1.9
+student P   4.5
+student Z   7.5
+student Z   7.5

@@ -16,14 +16,10 @@ void set_var(char* variable, char* value, var table[]);
 
 void unset_var(char* variable, var table[]);
 
-//--------------------------------------------------------
+void handle_pipes(char* args[], int* indexes, int total_indexes);
 
-void pipe_function(char* args[]);               // |
+void file_as_input(char* args[]);
 
-void run_on_file_content(char* args[]);         // <
-
-void redirect_output_to_file(char* args[]);     // >
-
-void run_in_background(char* args[]);           // &
+void run_in_background(char* args[], int* indexes, int total_indexes);
 
 #endif
